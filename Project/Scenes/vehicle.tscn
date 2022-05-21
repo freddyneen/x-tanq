@@ -1,72 +1,97 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://scenes/vehicle.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Vehicle.gd" type="Script" id=1]
 [ext_resource path="res://imgs/tyre.png" type="Texture" id=2]
-[ext_resource path="res://imgs/body.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/Barrel.tscn" type="PackedScene" id=3]
 
-[sub_resource type="CircleShape2D" id=2]
-radius = 85.0
+[sub_resource type="PhysicsMaterial" id=3]
+friction = 100.0
+rough = true
 
-[sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 200, 30 )
+[sub_resource type="CircleShape2D" id=1]
+radius = 16.1245
 
-[node name="Node2D" type="Node2D"]
+[sub_resource type="PhysicsMaterial" id=5]
+friction = 0.2
+
+[sub_resource type="Curve2D" id=6]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -41, 1, -17.375, 1, 17.375, -1, -25, -16, -16.625, 0.125, 16.625, -0.125, 21, -17, 0, 0, 0, 0, 37, -1, 15.125, -0.75, -15.125, 0.75, 22, 15, 15.25, -0.25, -15.25, 0.25, -24, 16, 0, 0, 0, 0, -41, 1 )
+}
+
+[node name="Vehicle" type="Node2D"]
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_horizontal_guides_": [  ]
+}
 
-[node name="front" type="RigidBody2D" parent="."]
-position = Vector2( 94, 77 )
-mass = 2.0
+[node name="WheelR" type="RigidBody2D" parent="."]
+position = Vector2( 21, -1 )
+mass = 5.0
+physics_material_override = SubResource( 3 )
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="front"]
+[node name="Sprite" type="Sprite" parent="WheelR"]
+scale = Vector2( 0.2, 0.2 )
 texture = ExtResource( 2 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="front"]
-shape = SubResource( 2 )
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WheelR"]
+shape = SubResource( 1 )
 
-[node name="rear" type="RigidBody2D" parent="."]
-position = Vector2( -114, 80 )
-mass = 2.0
+[node name="WheelL" type="RigidBody2D" parent="."]
+position = Vector2( -24, 0 )
+mass = 5.0
+physics_material_override = SubResource( 3 )
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="rear"]
+[node name="Sprite" type="Sprite" parent="WheelL"]
+scale = Vector2( 0.2, 0.2 )
 texture = ExtResource( 2 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="rear"]
-shape = SubResource( 2 )
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WheelL"]
+shape = SubResource( 1 )
 
-[node name="body" type="RigidBody2D" parent="."]
-mass = 2.04082
+[node name="Track" type="Node2D" parent="."]
 
-[node name="Sprite" type="Sprite" parent="body"]
-texture = ExtResource( 3 )
+[node name="Center" type="RigidBody2D" parent="."]
+collision_layer = 2
+mass = 60.0
+physics_material_override = SubResource( 5 )
+__meta__ = {
+"_edit_group_": true
+}
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="body"]
-shape = SubResource( 3 )
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Center"]
+visible = false
+polygon = PoolVector2Array( -34, -38, -34, -30, -25, -22, -45, -18, -47, 4, -36, 10, 31, 10, 40, -3, 39, -19, -4, -31, 30, -33, 28, -38, 12, -43, -20, -43 )
 
-[node name="frontSpring" type="DampedSpringJoint2D" parent="body"]
-position = Vector2( 94, 1 )
+[node name="Polygon2D" type="Polygon2D" parent="Center"]
+visible = false
+color = Color( 0.145098, 0.160784, 0.235294, 1 )
+polygon = PoolVector2Array( -47, 4, -36, 10, 31, 10, 40, -3, 39, -19, -5, -31, 30, -33, 28, -38, 12, -43, -20, -43, -34, -38, -34, -30, -25, -22, -45, -18 )
+
+[node name="Right" type="PinJoint2D" parent="Center"]
+position = Vector2( 21, -1 )
 node_a = NodePath("..")
-node_b = NodePath("../../front")
-length = 150.0
+node_b = NodePath("../../WheelR")
 
-[node name="frontSpin" type="PinJoint2D" parent="body"]
-position = Vector2( 94, 79 )
+[node name="Left" type="PinJoint2D" parent="Center"]
+position = Vector2( -25, 0 )
 node_a = NodePath("..")
-node_b = NodePath("../../front")
+node_b = NodePath("../../WheelL")
 
-[node name="rearSpring" type="DampedSpringJoint2D" parent="body"]
-position = Vector2( -114, -1 )
-node_a = NodePath("..")
-node_b = NodePath("../../rear")
-length = 150.0
-stiffness = 1.0
+[node name="Barrel" parent="Center" instance=ExtResource( 3 )]
+rotation = -0.785398
+scale = Vector2( 0.8, 0.8 )
 
-[node name="rearSpin" type="PinJoint2D" parent="body"]
-position = Vector2( -114, 82 )
-node_a = NodePath("..")
-node_b = NodePath("../../rear")
+[node name="Path" type="Path2D" parent="."]
+curve = SubResource( 6 )
+
+[node name="PathFollow" type="PathFollow2D" parent="Path"]
+position = Vector2( -41, 1 )
+rotation = -1.50324
+loop = false

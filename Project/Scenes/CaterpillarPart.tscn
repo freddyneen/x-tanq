@@ -4,7 +4,8 @@
 [ext_resource path="res://scenes/CaterpillarPart.gd" type="Script" id=2]
 
 [sub_resource type="PhysicsMaterial" id=2]
-friction = 30.0
+friction = 100.0
+rough = true
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 1.06
