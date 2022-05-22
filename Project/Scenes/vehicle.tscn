@@ -65,12 +65,14 @@ __meta__ = {
 "_edit_group_": true
 }
 
+[node name="Barrel" parent="Center" instance=ExtResource( 3 )]
+rotation = -0.785398
+scale = Vector2( 0.8, 0.8 )
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Center"]
-visible = false
 polygon = PoolVector2Array( -34, -38, -34, -30, -25, -22, -45, -18, -47, 4, -36, 10, 31, 10, 40, -3, 39, -19, -4, -31, 30, -33, 28, -38, 12, -43, -20, -43 )
 
 [node name="Polygon2D" type="Polygon2D" parent="Center"]
-visible = false
 color = Color( 0.145098, 0.160784, 0.235294, 1 )
 polygon = PoolVector2Array( -47, 4, -36, 10, 31, 10, 40, -3, 39, -19, -5, -31, 30, -33, 28, -38, 12, -43, -20, -43, -34, -38, -34, -30, -25, -22, -45, -18 )
 
@@ -83,10 +85,6 @@ node_b = NodePath("../../WheelR")
 position = Vector2( -25, 0 )
 node_a = NodePath("..")
 node_b = NodePath("../../WheelL")
-
-[node name="Barrel" parent="Center" instance=ExtResource( 3 )]
-rotation = -0.785398
-scale = Vector2( 0.8, 0.8 )
 
 [node name="Path" type="Path2D" parent="."]
 curve = SubResource( 6 )

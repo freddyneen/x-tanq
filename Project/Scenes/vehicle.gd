@@ -4,6 +4,10 @@ export (PackedScene) var CaterpillarPart
 export (PackedScene) var Bullet
 
 var speed = 10
+var move_left = false
+var move_right = false
+var fire_power = 0
+var firing = false
 
 func _ready():
 	create_caterpillar_track()
@@ -11,28 +15,50 @@ func _ready():
 	pass
 	
 func _input(event):
-	if event.is_action("ui_right"):
-		$WheelR.set_angular_velocity(speed)
-		$WheelL.set_angular_velocity(speed)
+	if event.is_action_pressed("ui_left") and not move_right:
+		move_left = true
 		
-	if event.is_action("ui_left"):
-		$WheelR.set_angular_velocity(-speed)
-		$WheelL.set_angular_velocity(-speed)
+	if event.is_action_released("ui_left"):
+		move_left = false
 		
-	if event.is_action("ui_up"):
-		$Center/Barrel.rotate(deg2rad(-1))
+	if event.is_action("ui_right") and not move_left:
+		move_right = true
 		
-	if event.is_action("ui_down"):
-		$Center/Barrel.rotate(deg2rad(1))
+	if event.is_action_released("ui_right"):
+		move_right = false
 		
-	if event.is_action("ui_select"):
+	if event.is_action_pressed("ui_select"):
+		firing = true
+		
+	if event.is_action_released("ui_select") and firing:
+		firing = false;
 		fire()
+		fire_power = 0
+		
+func _process(delta):
+	#print_debug(delta)
+	if (firing and fire_power < 1):
+		fire_power = min(1, fire_power + delta)
+
+func _physics_process(delta):
+	move_vehicle(delta)
+		
+func move_vehicle(delta):
+	var move_value = 0
+	if move_left:
+		move_value = -1
+	elif move_right:
+		move_value = 1
+	
+	if move_value != 0:
+		$WheelR.set_angular_velocity(move_value * speed)
+		$WheelL.set_angular_velocity(move_value * speed)
 		
 func fire():
 	var bullet = Bullet.instance() as RigidBody2D
 	bullet.position = $Center/Barrel.get_fire_point_position()
 	get_tree().get_root().add_child(bullet)
-	bullet.apply_central_impulse($Center/Barrel.get_barrel_direction() * 400)
+	bullet.apply_central_impulse($Center/Barrel.get_barrel_direction() * 400 * fire_power)
 
 func create_caterpillar_track():
 	var partInit = CaterpillarPart.instance() as RigidBody2D
